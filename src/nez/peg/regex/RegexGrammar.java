@@ -64,7 +64,9 @@ public class RegexGrammar extends AbstractTreeVisitor {
 	void convert(CommonTree e, GrammarFile grammar) {
 		this.grammar = grammar;
 		grammar.defineProduction(e, "File", pi(e, null));
-		grammar.defineProduction(e, "Chunk", grammar.newNonTerminal("File"));
+		//GrammarFactory.newNonTerminal(getSourcePosition(), getGrammarFile(), name)
+		grammar.defineProduction(e, "Chunk",GrammarFactory.newNonTerminal(e, grammar, "File"));
+		//grammar.defineProduction(e, "Chunk", grammar.newNonTerminal("File"));
 	}
 	
 	protected Method getClassMethod(String method, Tag tag) throws NoSuchMethodException, SecurityException {

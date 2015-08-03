@@ -117,6 +117,10 @@ public class RegexConverter extends GrammarConverter{
 	public Expression piLazyQuantifiers(CommonTree e, Expression k) {
 		String ruleName = "Repetition" + NonTerminalCount++;
 		Expression ne = GrammarFactory.newNonTerminal(e, this.grammar, ruleName);
+		
+		if( k == null ) { 
+			k = GrammarFactory.newEmpty(null);
+		}
 		grammar.defineProduction(e, ruleName, toChoice(e, k, pi(e.get(0), ne)));
 		return ne;
 	}
@@ -139,7 +143,7 @@ public class RegexConverter extends GrammarConverter{
 	}
 
 	public Expression piAny(CommonTree e, Expression k) {
-		return toAny(e);
+		return toSeq(e,k);
 	}
 
 	public Expression piNegativeCharacterSet(CommonTree e, Expression k) {
@@ -197,6 +201,7 @@ public class RegexConverter extends GrammarConverter{
 	public Expression toCharacterRange(CommonTree e) {
 		byte[] begin = StringUtils.toUtf8(e.get(0).toText());
 		byte[] end = StringUtils.toUtf8(e.get(1).toText());
+		byteMap = new boolean[257];
 		for(byte i = begin[0]; i <= end[0]; i++) {
 			byteMap[i] = true;
 		}
@@ -228,6 +233,7 @@ public class RegexConverter extends GrammarConverter{
 	public Expression toChoice(CommonTree node, Expression e, Expression k) {
 		UList<Expression> l = new UList<Expression>(new Expression[2]);
 		GrammarFactory.addChoice(l, e);
+
 		if (k != null) {
 			GrammarFactory.addChoice(l, k);
 		}
