@@ -233,7 +233,6 @@ public class RegexConverter extends GrammarConverter{
 	public Expression toChoice(CommonTree node, Expression e, Expression k) {
 		UList<Expression> l = new UList<Expression>(new Expression[2]);
 		GrammarFactory.addChoice(l, e);
-
 		if (k != null) {
 			GrammarFactory.addChoice(l, k);
 		}
