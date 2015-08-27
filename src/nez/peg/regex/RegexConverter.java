@@ -169,6 +169,12 @@ public class RegexConverter extends GrammarConverter{
 		return toSeq(c, k);
 	}
 	
+	// grouping
+	// piGrouping
+	public Expression piCapture(CommonTree e,Expression k) {
+		return pi(e.get(0),k);
+	}
+	
 	private Expression toExpression(AbstractTree<?> e) {
 		return (Expression)this.visit("to", e);
 	}
