@@ -1,14 +1,19 @@
 package nez.peg.regex;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 
+import nez.NezException;
+import nez.NezOption;
+import nez.SourceContext;
 import nez.ast.AbstractTree;
 import nez.ast.CommonTree;
 import nez.ast.Tag;
 import nez.lang.Expression;
+import nez.lang.Grammar;
 import nez.lang.GrammarFactory;
 import nez.lang.GrammarFile;
 import nez.lang.Production;
@@ -22,6 +27,62 @@ public class RegexConverter extends GrammarConverter{
 	public RegexConverter(GrammarFile grammar, String name) {
 		super(grammar, name);
 	}
+	
+	
+	static GrammarFile regexGrammar = null;
+	
+	/*
+	 * java -jar nez.jar match -p test.regex -i in_ac
+	 */
+	public final static GrammarFile loadGrammar(String filePath,NezOption option) throws IOException {
+		
+		SourceContext regex = SourceContext.newFileContext(filePath);
+		
+		try {
+			regexGrammar = GrammarFile.loadGrammarFile("regex.nez", NezOption.newSafeOption());
+		}
+		catch(IOException e) {
+			ConsoleUtils.exit(1, "can't load regex.nez");
+		}
+		
+		Grammar p = regexGrammar.newGrammar("File");
+		CommonTree node = p.parseCommonTree(regex);
+		
+		if (node == null) {
+			throw new NezException(regex.getSyntaxErrorMessage());
+		}
+		if (regex.hasUnconsumed()) {
+			throw new NezException(regex.getUnconsumedMessage());
+		}
+		GrammarFile gfile = GrammarFile.newGrammarFile("re", NezOption.newDefaultOption());
+		RegexConverter rc = new RegexConverter(gfile,null);
+		rc.convert(node);
+		return rc.grammar;
+	}
+
+	public final static GrammarFile loadGrammar(SourceContext regex,NezOption option) throws IOException {
+		try {
+			regexGrammar = GrammarFile.loadGrammarFile("regex.nez", NezOption.newSafeOption());
+		}
+		catch(IOException e) {
+			ConsoleUtils.exit(1, "can't load regex.nez");
+		}
+		
+		Grammar p = regexGrammar.newGrammar("File");
+		CommonTree node = p.parseCommonTree(regex);
+		
+		if (node == null) {
+			throw new NezException(regex.getSyntaxErrorMessage());
+		}
+		if (regex.hasUnconsumed()) {
+			throw new NezException(regex.getUnconsumedMessage());
+		}
+		GrammarFile gfile = GrammarFile.newGrammarFile("re", NezOption.newDefaultOption());
+		RegexConverter rc = new RegexConverter(gfile,null);
+		rc.convert(node);
+		return rc.grammar;
+	}
+		
 	
 	public final Expression pi(AbstractTree<?> expr, Expression k) {
 		Tag tag = expr.getTag();
@@ -72,8 +133,11 @@ public class RegexConverter extends GrammarConverter{
 		file.writeIndent("// Generate Date: " + new Date().toString());
 		file.writeIndent("// Input regex :  " + e.toText());
 		file.writeIndent("\n");
+		String prev = new String();
 		for(Production r : grammar.getAllProductionList()) {
-			file.write(r.toString());
+			//if( prev.equals(r.toString()) ) continue;
+			prev = r.toString();
+			file.write(r.toString()); 
 			file.writeIndent("\n");
 		}
 		file.flush();
@@ -132,7 +196,7 @@ public class RegexConverter extends GrammarConverter{
 		grammar.defineProduction(e, ruleName, toChoice(e, pi(e.get(0), ne), k));
 		return ne;
 	}
-	
+	 		
 	// pi(e?, k) = pi(e, k) / k
 	public Expression piOption(CommonTree e, Expression k) {
 		return toChoice(e, pi(e.get(0), k), k);

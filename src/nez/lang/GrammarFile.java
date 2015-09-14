@@ -15,6 +15,8 @@ import nez.main.Command;
 import nez.main.Verbose;
 import nez.peg.celery.CeleryConverter;
 import nez.peg.dtd.DTDConverter;
+import nez.peg.regex.Executor;
+import nez.peg.regex.RegexConverter;
 import nez.util.ConsoleUtils;
 import nez.util.UList;
 import nez.util.UMap;
@@ -76,6 +78,9 @@ public class GrammarFile extends GrammarFactory {
 		if (urn.endsWith(".cl")) {
 			return CeleryConverter.loadGrammar(urn, option);
 		}
+		if(urn.endsWith(".regex")) {/////
+			return RegexConverter.loadGrammar(urn,option);/////
+		}/////
 		return loadNezFile(urn, option);
 	}
 
