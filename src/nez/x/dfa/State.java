@@ -1,6 +1,6 @@
 package nez.x.dfa;
 
-public class State {
+public class State implements Comparable<State> {
 	private int ID;
 
 	public State() {
@@ -38,8 +38,9 @@ public class State {
 		return false;
 	}
 
+	@Override
 	public int compareTo(State state) {
-		return new Integer(ID).compareTo(state.getID());
+		return new Integer(ID).compareTo(new Integer(state.getID()));
 	}
 
 }
