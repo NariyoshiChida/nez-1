@@ -101,7 +101,6 @@ public class NFA {
 		TreeMap<String, State> dfaStateTable = new TreeMap<String, State>();
 
 		deq.addLast(getInitialStates());
-		System.out.println("inital = " + getInitialStates());
 		dfaStateTable.put(encode(getInitialStates()), new State(stateID));
 		initialState = new State(stateID);
 		{

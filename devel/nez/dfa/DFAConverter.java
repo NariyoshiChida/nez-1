@@ -270,6 +270,7 @@ public class DFAConverter {
 		HashSet<State> F = new HashSet<State>();
 
 		BDD bdd = new BDD();
+
 		Map<Integer, Integer> BDDIDtoVertexID = new HashMap<Integer, Integer>();
 		int vertexID = 0;
 		Deque<BooleanExpression> deq = new ArrayDeque<BooleanExpression>();
@@ -292,7 +293,7 @@ public class DFAConverter {
 
 		while (!deq.isEmpty()) {
 			BooleanExpression be = deq.poll();
-
+			// System.out.println("be = " + be);
 			if (be instanceof LogicVariable && (((LogicVariable) be).isFalse() || ((LogicVariable) be).isTrue())) {
 				continue;
 			}
@@ -313,6 +314,8 @@ public class DFAConverter {
 				BooleanExpression epsilonExpansionTransitBe = epsilonExpansion(transitBe);
 				// System.out.println("eetb = " + epsilonExpansionTransitBe);
 				int bddID = bdd.build(epsilonExpansionTransitBe);
+				// System.out.println((char) i + " : next = " +
+				// epsilonExpansionTransitBe);
 				// System.out.println("bddID = " + bddID +
 				// " already exists?? -> " + BDDIDtoVertexID.containsKey(new
 				// Integer(bddID)));
